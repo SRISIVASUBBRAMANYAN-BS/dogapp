@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog Matcher App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            overflow: hidden;
+            padding: 0 20px;
+        }
+        header {
+            background: #50b3a2;
+            color: white;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #e8491d 3px solid;
+        }
+        header h1 {
+            margin: 0;
+            text-align: center;
+            padding-bottom: 20px;
+        }
+        .section {
+            background: #fff;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .dog-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .dog-card {
+            width: 200px;
+            margin: 10px;
+            text-align: center;
+        }
+        .dog-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .camera-module {
+            text-align: center;
+        }
+        .camera-module video, .camera-module img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #50b3a2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #429e8d;
+        }
+        #capturedPhoto {
+            display: none;
+        }
+        @media(max-width: 768px) {
+            .dog-card {
+                width: 45%;
+            }
+        }
+        @media(max-width: 500px) {
+            .dog-card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Dog Matcher App</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="section">
+            <h2>Dog Information</h2>
+            <p>Welcome to the Dog Matcher App! Here you can learn about various dog breeds, their characteristics, and find a dog that matches your appearance. Explore our gallery of adorable dogs and use our fun camera feature to see which dog you resemble!</p>
+        </section>
+
+        <section class="section camera-module">
+            <h2>Camera Module</h2>
+            <p>Take a photo to see which dog you resemble!</p>
+            <button id="startCamera">Start Camera</button>
+            <button id="capturePhoto">Capture Photo</button>
+            <div>
+                <video id="video" autoplay playsinline style="display:none;"></video>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <img id="capturedPhoto" alt="Captured photo">
+                <p id="dogName"></p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Dog Gallery</h2>
+            <div class="dog-gallery">
+                <div class="dog-card">
+                    <img src="https://placedog.net/200/200?id=1" alt="Buddy">
+                    <p>Buddy</p>
+                </div>
+                <div class="dog-card">
+                    <img src="https://placedog.net/200/200?id=2" alt="Max">
+                    <p>Max</p>
+                </div>
+                <div class="dog-card">
+                    <img src="https://placedog.net/200/200?id=3" alt="Charlie">
+                    <p>Charlie</p>
+                </div>
+                <div class="dog-card">
+                    <img src="https://placedog.net/200/200?id=4" alt="Rocky">
+                    <p>Rocky</p>
+                </div>
+                <div class="dog-card">
+                    <img src="https://placedog.net/200/200?id=5" alt="Cooper">
+                    <p>Cooper</p>
+                </div>
+                <div class="dog-card">
+                    <img src="https://placedog.net/200/200?id=6" alt="Bear">
+                    <p>Bear</p>
+                </div>
+                <div class="dog-card">
+                    <img src="https://placedog.net/200/200?id=7" alt="Duke">
+                    <p>Duke</p>
+                </div>
+                <div class="dog-card">
+                    <img src="https://placedog.net/200/200?id=8" alt="Tucker">
+                    <p>Tucker</p>
+                </div>
+                <div class="dog-card">
+                    <img src="https://placedog.net/200/200?id=9" alt="Jack">
+                    <p>Jack</p>
+                </div>
+                <div class="dog-card">
+                    <img src="https://placedog.net/200/200?id=10" alt="Oliver">
+                    <p>Oliver</p>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button id="findMatchingDog">Find Matching Dog</button>
+            </div>
+            <div id="matchingDogResult" style="text-align: center; margin-top: 20px; display: none;">
+                <h3>Your matching dog:</h3>
+                <img id="matchingDogImage" alt="Matching dog" style="max-width: 200px;">
+                <p id="matchingDogName"></p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const capturedPhoto = document.getElementById('capturedPhoto');
+        const dogNameElement = document.getElementById('dogName');
+        const startCameraButton = document.getElementById('startCamera');
+        const capturePhotoButton = document.getElementById('capturePhoto');
+        const findMatchingDogButton = document.getElementById('findMatchingDog');
+        const matchingDogResult = document.getElementById('matchingDogResult');
+        const matchingDogImage = document.getElementById('matchingDogImage');
+        const matchingDogName = document.getElementById('matchingDogName');
+
+        let stream;
+
+        startCameraButton.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.style.display = 'block';
+            } catch (err) {
+                console.error("Error accessing the camera:", err);
+            }
+        });
+
+        capturePhotoButton.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            capturedPhoto.src = canvas.toDataURL('image/jpeg');
+            capturedPhoto.style.display = 'block';
+            video.style.display = 'none';
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            generateDogName();
+        });
+
+        function generateDogName() {
+            const dogNames = ['Buddy', 'Max', 'Charlie', 'Rocky', 'Cooper', 'Bear', 'Duke', 'Tucker', 'Jack', 'Oliver'];
+            const randomName = dogNames[Math.floor(Math.random() * dogNames.length)];
+            dogNameElement.textContent = `You look like a ${randomName}!`;
+        }
+
+        findMatchingDogButton.addEventListener('click', () => {
+            const dogNames = ['Buddy', 'Max', 'Charlie', 'Rocky', 'Cooper', 'Bear', 'Duke', 'Tucker', 'Jack', 'Oliver'];
+            const randomName = dogNames[Math.floor(Math.random() * dogNames.length)];
+            const randomId = Math.floor(Math.random() * 10) + 1;
+            matchingDogImage.src = `https://placedog.net/200/200?id=${randomId}`;
+            matchingDogName.textContent = randomName;
+            matchingDogResult.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
